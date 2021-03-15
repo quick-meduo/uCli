@@ -55,6 +55,10 @@ pub struct TokenCommand {
     #[clap(short, long)]
     name: String,
 
+    /// email of the user granted
+    #[clap(short, long)]
+    email: String,
+
     /// domain of the user located
     #[clap(short, long)]
     domain: String,
