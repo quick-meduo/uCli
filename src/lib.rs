@@ -7,6 +7,12 @@ use clap_generate::{
     generators::{Bash, Fish, Zsh},
 };
 
+pub mod Commands;
+use Commands::{
+    TokenCommandHandler,
+    ShellCompleteHandler,
+};
+
 #[derive(Clap)]
 #[clap(version = "1.0", author = "Meduo G. <meduo@foxmail.com>")]
 struct Opts {
@@ -23,32 +29,35 @@ struct Opts {
 }
 
 #[derive(Clap)]
-enum SubCommand {
+pub enum SubCommand {
     #[clap(version = "1.0", author = "Meduo G. <meduo@foxmail.com>")]
     gencompletion(ShellCompletion),
+    #[clap(version = "1.0", author = "Meduo G. <meduo@foxmail.com>")]
+    token(TokenCommand),
 }
 
 /// A subcommand to generate shell completion
 #[derive(Clap)]
-struct ShellCompletion {
+pub struct ShellCompletion {
     /// create shell completion
     #[clap(short, long, default_value = "bash")]
     shell: String,
 }
 
-fn generate_completion(mut app: App,shell: String) {
-    match &shell[..] {
-        "bash" => {
-            generate::<Bash, _>(&mut app, "uCli", &mut io::stdout());
-        }
-        "zsh" => {
-            generate::<Zsh, _>(&mut app, "uCli", &mut io::stdout());
-        }
-        "fish" => {
-            generate::<Fish, _>(&mut app, "uCli", &mut io::stdout());
-        }
-        _ => {}
-    };
+/// A subcommand to manage security token
+#[derive(Clap)]
+pub struct TokenCommand {
+    /// command(create,query,remove,revoke) to manage sucurity token
+    #[clap(short, long, default_value = "create")]
+    cmd: String,
+
+    /// name of the user granted
+    #[clap(short, long)]
+    name: String,
+
+    /// domain of the user located
+    #[clap(short, long)]
+    domain: String,
 }
 
 pub fn handleCmd() {
@@ -57,7 +66,13 @@ pub fn handleCmd() {
 
     match opts.subcmd {
         SubCommand::gencompletion(completation) => {
-            generate_completion(app,completation.shell);
+            let handler = ShellCompleteHandler::Command::default();
+            handler.handle(app,completation);
+        },
+        SubCommand::token(token) => {
+            let handler = TokenCommandHandler::Command::default();
+            handler.handle(token);
         }
+        _ => {}
     }
 }
