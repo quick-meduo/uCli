@@ -1,0 +1,12 @@
+[package]
+name = "uCli"
+version = "0.1.0"
+authors = ["meduo <meduo@foxmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = {version = "3.0.0-beta.2"}
+reqwest = { version = "0.11.1"}
+clap_generate = {version = "3.0.0-beta.2"}
